@@ -22,7 +22,5 @@ app.use(logger())
 app.use(router.routes()).use(router.allowedMethods())
 
 app.listen(config.get('server.port'), () => {
-  console.log(`SITO_REST_SERVER started at port : ${config.get('server.port')});
-});
-
-
+  console.log(`SITO_REST_SERVER started at port : ${config.get('server.port')}`)
+})
