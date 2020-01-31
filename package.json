@@ -12,11 +12,16 @@
   "author": "filippovdima5",
   "license": "ISC",
   "dependencies": {
+    "@types/koa-bodyparser": "^4.3.0",
+    "@types/koa-favicon": "^2.0.19",
+    "@types/koa-static": "^4.0.1",
     "config": "^3.2.5",
     "koa": "^2.11.0",
     "koa-bodyparser": "^4.2.1",
+    "koa-favicon": "^2.0.1",
     "koa-logger": "^3.2.1",
-    "koa-router": "^8.0.6"
+    "koa-router": "^8.0.6",
+    "koa-static": "^5.0.0"
   },
   "devDependencies": {
     "@types/config": "0.0.36",

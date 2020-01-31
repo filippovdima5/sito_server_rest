@@ -1,26 +1,31 @@
-import Koa from "koa"
-import Router from "koa-router"
 import config from 'config'
-
-import logger from "koa-logger"
-
-
+import Koa from "koa"
 const app = new Koa()
-const router = new Router()
 
-// Hello world
-router.get("/", async (ctx, next) => {
-  ctx.body = { msg: "Hello world!" }
 
-  await next()
-})
+// Middleware:
+if (process.env.NODE_ENV === 'production'){
+  require('./middlewares/koa-favicon').init(app)
+  require('./middlewares/koa-logger').init(app)
+  require('./middlewares/koa-static').init(app)
+  require('./middlewares/koa-bodyparser').init(app)
+} else {
+  require('./middlewares/koa-favicon').init(app)
+  require('./middlewares/koa-logger').init(app)
+  require('./middlewares/koa-static').init(app)
+  require('./middlewares/koa-bodyparser').init(app)
+}
+require('./middlewares/koa-favicon').init(app)
+require('./middlewares/koa-logger').init(app)
+require('./middlewares/koa-static').init(app)
+require('./middlewares/koa-bodyparser').init(app)
 
-// Middlewares
-app.use(logger())
 
-// Routes
-app.use(router.routes()).use(router.allowedMethods())
+//Routes:
+require('./routs/out_api').init(app)
 
+
+// Listen:
 app.listen(config.get('server.port'), () => {
   console.log(`SITO_REST_SERVER started at port : ${config.get('server.port')}`)
 })
