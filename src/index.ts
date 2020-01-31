@@ -12,15 +12,15 @@ const router = new Router()
 router.get("/", async (ctx, next) => {
   ctx.body = { msg: "Hello world!" }
 
-  await next();
-});
+  await next()
+})
 
 // Middlewares
 app.use(logger())
 
 // Routes
-app.use(router.routes()).use(router.allowedMethods());
+app.use(router.routes()).use(router.allowedMethods())
 
 app.listen(config.get('server.port'), () => {
-  console.log("Koa started");
+  console.log("Koa started")
 });

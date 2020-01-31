@@ -4,7 +4,7 @@ module.exports = {
     },
 
     mongodb: {
-        uri: 'mongodb://localhost/sito_v-2',
+        uri: 'mongodb://sito.store/sito_v-2',
         debug: false,
     },
 
