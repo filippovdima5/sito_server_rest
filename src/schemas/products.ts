@@ -1,4 +1,6 @@
-import mongoose, { Document, Model, Schema } from 'mongoose'
+import { Document, Model, Schema } from 'mongoose'
+import {mongoose} from '../libs/mongoose'
+
 
 
 export interface ProductsInterface extends Document {
@@ -13,7 +15,8 @@ export interface ProductsInterface extends Document {
   price: number,
   oldprice: number,
   sale: number,
-  img: Array<string>
+  img: Array<string>,
+  url: string,
 }
 
 const productsScheme = new Schema({
@@ -28,7 +31,11 @@ const productsScheme = new Schema({
   price: Number,
   oldprice: Number,
   sale: Number,
-  img: [String]
-})
+  img: [String],
+  url: String
+},
+  {
+    timestamps: true
+  })
 
 export const Products = mongoose.model<ProductsInterface>('Products', productsScheme)

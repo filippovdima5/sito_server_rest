@@ -5,8 +5,8 @@ module.exports = {
 
 
     mongodb: {
-        uri: 'mongodb://sito.store/sito_v-2',
-        debug: false,
+        uri: 'mongodb://localhost:27017/sito_v-2',
+        debug: true,
     },
 
 
