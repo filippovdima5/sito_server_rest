@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose from 'src/libs/mongoose/index'
 // @ts-ignore
 import beautifyUnique  from 'mongoose-beautiful-unique-validation'
 import config from 'config'

@@ -8,7 +8,7 @@ exports.init = (app: any) =>app.use(async (ctx: Koa.BaseContext, next: () => Pro
       ctx.body = e.message;
       ctx.status = e.status;
     } else {
-      ctx.body = 'Error 500';
+      ctx.body = 'One of us is a teapot!';
       ctx.status = 500;
       //console.log(e.message, e.stack);
       console.log(e.message, 'Нужно выводить ошибки в логи mongoDB!')
