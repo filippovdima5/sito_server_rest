@@ -1,12 +1,13 @@
-import { queryNormalization } from '../../helpers/query-normalization'
-import { Products, ProductsInterface } from '../../schemas/products'
+import { queryNormalization } from '../../../helpers/query-normalization'
+import { Products, ProductsInterface } from '../../../schemas/products'
 import LRUCache from 'lru-cache'
-import { getCache } from '../../helpers/get-cache'
-import { projectFields } from '../../helpers/project-fields'
+import { getCache } from '../../../helpers/get-cache'
+import { projectFields } from '../../../helpers/project-fields'
+import { setSort } from './helpers/set-sort'
 
 
 // ------------------------------------------------------------------
-type Sort = 'update_up' | 'price_up' | 'sale_up'
+export type Sort = 'update_up' | 'price_up' | 'sale_up'
 
 type ReqParams = {
   sex_id: 1 | 2,
@@ -20,6 +21,8 @@ type ReqParams = {
   price_to: number,
   sale_from: number,
   sale_to: number,
+
+  favorite: 0 | 1,
 
   page: number,
   sort: Sort,
@@ -36,6 +39,7 @@ const defaultParams: any = {
   price_to: 30000,
   sale_from: 30,
   sale_to: 99,
+  favorite: 0
 }
 // ------------------------------------------------------------------
 
@@ -56,19 +60,10 @@ const responseField: Array<keyof ProductsInterface> = ['id', 'title', 'url', 'im
 
 // ------------------------------------------------------------------
 
-const setSort = (sort: Sort) => {
-  switch (sort) {
-    case 'update_up': return {updatedAt: 1};
-    case 'price_up' : return {price: -1};
-    case 'sale_up' : return {sale: -1};
-    default: return {updatedAt: 1};
-  }
-};
-
 
 const lru = new LRUCache({max: 100, maxAge: 60 * 1000})
 
-export async function productsList(ctx: any) {
+export async function index(ctx: any) {
   const finalParams = queryNormalization(ctx.request.body as ReqParams, defaultParams, requiredFields)
   const {sex_id, brands, categories, colors, limit, page, sizes, sort, price_from, price_to, sale_from, sale_to} = finalParams
 
@@ -77,7 +72,7 @@ export async function productsList(ctx: any) {
     return null
 
   } catch (e) {
-    
+
     const $skip = (page - 1) * limit
     const $sort = setSort(sort)
 

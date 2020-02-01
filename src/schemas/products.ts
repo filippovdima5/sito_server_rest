@@ -2,12 +2,10 @@ import { Document, Model, Schema } from 'mongoose'
 import {mongoose} from '../libs/mongoose'
 
 
-
 export interface ProductsInterface extends Document {
   id: string,
   title: string,
   description: string,
-  category: string,
   category_id: number,
   brand: string,
   size: string,
@@ -23,7 +21,6 @@ const productsScheme = new Schema({
   id: String,
   title: String,
   description: String,
-  category: String,
   category_id: Number,
   brand: String,
   size: String,
