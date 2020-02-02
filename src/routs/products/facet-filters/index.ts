@@ -2,10 +2,11 @@ import {queryNormalization} from '../../../helpers/query-normalization'
 import LRUCache from 'lru-cache'
 import {getCache} from '../../../helpers/get-cache'
 import {projectFields} from '../../../helpers/project-fields'
+import  { onlySex } from './only-sex'
 
 
 // ------------------------------------------------------------------
-type ReqParams = {
+export type ReqParams = {
   sex_id: 1 | 2,
 
   brands: Array<string> | null,
@@ -28,6 +29,7 @@ const defaultParams: any = {
   price_to: 30000,
   sale_from: 30,
   sale_to: 99,
+
   favorite: 0
 }
 // ------------------------------------------------------------------
@@ -38,14 +40,14 @@ const lru = new LRUCache({max: 100, maxAge: 60 * 1000})
 
 export async function facetFilters(ctx: any) {
   const finalParams = queryNormalization(ctx.request.body as ReqParams, defaultParams, requiredFields)
-  const {} = finalParams
+  const {sex_id, brands, categories, sizes, colors, price_from, price_to, sale_from, sale_to} = finalParams
 
   try {
     ctx.body = getCache(lru, finalParams)
     return null
 
   } catch (e) {
-
+    ctx.body = onlySex(sex_id)
   }
 }
 
