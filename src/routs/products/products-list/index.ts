@@ -63,7 +63,7 @@ const responseField: Array<keyof ProductsInterface> = ['id', 'title', 'url', 'im
 
 const lru = new LRUCache({max: 100, maxAge: 60 * 1000})
 
-export async function index(ctx: any) {
+export async function productsList(ctx: any) {
   const finalParams = queryNormalization(ctx.request.body as ReqParams, defaultParams, requiredFields)
   const {sex_id, brands, categories, colors, limit, page, sizes, sort, price_from, price_to, sale_from, sale_to} = finalParams
 

@@ -47,7 +47,7 @@ export async function facetFilters(ctx: any) {
     return null
 
   } catch (e) {
-    ctx.body = onlySex(sex_id)
+    ctx.body = await onlySex(sex_id, lru)
   }
 }
 

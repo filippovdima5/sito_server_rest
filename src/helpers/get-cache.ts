@@ -6,7 +6,7 @@ import LRUCache from 'lru-cache'
 // ибо и так всё затянулось
 
 export const getCache = ( lru: LRUCache<any, any>, keyCache: any): any => {
-  const key = typeof keyCache === 'string' ? keyCache : JSON.stringify(keyCache)
+  const key = typeof keyCache === 'string' ? keyCache.toString() : JSON.stringify(keyCache)
   if (lru.get(key)) return lru.get(key)
   else throw Error('Кеша нет')
 }

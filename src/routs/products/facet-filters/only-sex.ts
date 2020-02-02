@@ -7,16 +7,15 @@ import { ReqParams } from './index'
 const setFacetItem = (group: string) => ([
   {$group: {_id: `${group}`, count: {$sum: 1}}},
   {$project: {value: "$_id", count: "$count", _id: 0}},
-  {sort: {count: 1}}
+  {$sort: {count: 1}}
 ])
 
 
 
-const lru = new LRUCache({ max: 100, maxAge: 3 * 60 * 1000 })
+export async function onlySex(sex_id: ReqParams['sex_id'], lru: LRUCache<any, any>) {
 
-export async function onlySex(sex_id: ReqParams['sex_id']) {
   try {
-    return getCache(lru, sex_id)
+   return  getCache(lru, sex_id)
   } catch (e) {
     return await Products
       .aggregate([
@@ -24,12 +23,12 @@ export async function onlySex(sex_id: ReqParams['sex_id']) {
         {$facet: {
           categories: setFacetItem('$category_id'),
           brands: setFacetItem('$brand'),
-          sizes: setFacetItem('$sizes'),
-          colors: setFacetItem('$colors'),
-          price_from: {$group: {"_id": null, "price_from": { "$min": "$price" }}},
-          price_to: {$group: {"_id": null, "price_to": { "$max": "$price" }}},
-          sale_from: {$group: {"_id": null, "sale_from": { "$min": "$sale" }}},
-          sale_to: {$group: {"_id": null, "sale_to": { "$max": "$sale" }}},
+          sizes: setFacetItem('$size'),
+          colors: setFacetItem('$color'),
+          price_from: [{$group: {"_id": null, "price_from": { "$min": "$price" }}}],
+          price_to: [{$group: {"_id": null, "price_to": { "$max": "$price" }}}],
+          sale_from: [{$group: {"_id": null, "sale_from": { "$min": "$sale" }}}],
+          sale_to: [{$group: {"_id": null, "sale_to": { "$max": "$sale" }}}],
           }}
       ])
     .then(res => {
