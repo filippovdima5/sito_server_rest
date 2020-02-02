@@ -13,7 +13,6 @@ const setFacetItem = (group: string) => ([
 
 
 export async function onlySex(sex_id: ReqParams['sex_id'], lru: LRUCache<any, any>) {
-
   try {
    return  getCache(lru, sex_id)
   } catch (e) {

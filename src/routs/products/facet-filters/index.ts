@@ -36,7 +36,8 @@ const defaultParams: any = {
 
 
 
-const lru = new LRUCache({max: 100, maxAge: 60 * 1000})
+const lruForCompareAggregate = new LRUCache({max: 100, maxAge: 3* 60 * 1000})
+const lru = new LRUCache({max: 100, maxAge: 10 * 1000})
 
 export async function facetFilters(ctx: any) {
   const finalParams = queryNormalization(ctx.request.body as ReqParams, defaultParams, requiredFields)
@@ -47,7 +48,9 @@ export async function facetFilters(ctx: any) {
     return null
 
   } catch (e) {
-    ctx.body = await onlySex(sex_id, lru)
+    const compareResult = await onlySex(sex_id, lruForCompareAggregate)
+    console.log(compareResult);
+    ctx.body = 'g'
   }
 }
 
