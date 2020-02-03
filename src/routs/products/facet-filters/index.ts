@@ -1,7 +1,6 @@
 import {queryNormalization} from '../../../helpers/query-normalization'
 import LRUCache from 'lru-cache'
 import {getCache} from '../../../helpers/get-cache'
-import {projectFields} from '../../../helpers/project-fields'
 import { setFacetItem, setFacetArrow } from './helpers/set-facet'
 import {Products} from '../../../schemas/products'
 import { objectWithoutFields } from '../../../helpers/object-without-fields'

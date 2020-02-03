@@ -22,6 +22,7 @@ if (process.env.NODE_ENV === 'production'){
 
 //Routes:
 require('./routs/products').init(app)
+require('./routs/search').init(app)
 require('./routs/out_api').init(app)
 
 
