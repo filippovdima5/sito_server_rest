@@ -50,10 +50,10 @@ type Query = {
   sex_id: any,
   price: {$gte: ReqParams['price_from'], $lte: ReqParams['price_to']},
   sale: {$gte: ReqParams['sale_from'], $lte: ReqParams['sale_to']},
-  brands?: {$in: ReqParams['brands']},
-  categories?: {$in: ReqParams['categories']},
-  sizes?: {$in: ReqParams['sizes']},
-  colors?: {$in: ReqParams['colors']},
+  brand?: {$in: ReqParams['brands']},
+  category_id?: {$in: ReqParams['categories']},
+  size?: {$in: ReqParams['sizes']},
+  color?: {$in: ReqParams['colors']},
 }
 
 const responseField: Array<keyof ProductsInterface> = ['id', 'title', 'url', 'img', 'brand', 'price', 'oldprice', 'sale']
@@ -84,16 +84,16 @@ export async function productsList(ctx: any) {
       sale: {$gte: sale_from, $lte: sale_to},
     }
     if (brands) {
-      query.brands = {$in: brands}
+      query.brand = {$in: brands}
     }
     if (categories) {
-      query.categories = {$in: categories}
+      query.category_id = {$in: categories}
     }
     if (colors) {
-      query.colors = {$in: colors}
+      query.color = {$in: colors}
     }
     if (sizes) {
-      query.sizes = {$in: sizes}
+      query.size = {$in: sizes}
     }
 
     const paginate_info = [
