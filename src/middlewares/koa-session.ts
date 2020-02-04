@@ -6,6 +6,5 @@ exports.init = (app: any) => {
     key: 'sito:sess',
     rolling: true,
     signed: false
-    //renew: true,
   }, app))
 }
