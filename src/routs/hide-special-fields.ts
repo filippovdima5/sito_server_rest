@@ -1,0 +1,1 @@
+export const hideSpecialFields = {createAt: 0, updateAt: 0, __v: 0}
