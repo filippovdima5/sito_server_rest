@@ -124,13 +124,20 @@ export async function productsList(ctx: any) {
         }
       ])
       .then(res => {
-        if (res[0].products.length === 0) {
+        // todo! Нужно типизировать структуру на выходе и подгонять затем к ней!
+
+        let result = {
+          products: res[0].products,
+          info: res[0].info[0]
+        }
+
+        if (result.products.length === 0) {
           ctx.body = {products: [], info: {total: 0, total_pages: 0}}
           lru.set(JSON.stringify(finalParams), {products: [], info: {total: 0, total_pages: 0}})
           return null
         }
 
-        ctx.body = res[0]
+        ctx.body = result
         lru.set(JSON.stringify(finalParams), res[0])
       })
 
