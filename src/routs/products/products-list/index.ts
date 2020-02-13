@@ -138,7 +138,7 @@ export async function productsList(ctx: any) {
         }
 
         ctx.body = result
-        lru.set(JSON.stringify(finalParams), res[0])
+        lru.set(JSON.stringify(finalParams), result)
       })
 
   }
