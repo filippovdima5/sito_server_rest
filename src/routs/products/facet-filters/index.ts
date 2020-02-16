@@ -121,10 +121,10 @@ export async function facetFilters(ctx: any) {
           brands: res[1],
           sizes: res[2],
           colors: res[3],
-          price_from: res[4][0].price,
-          price_to: res[5][0].price,
-          sale_from: res[6][0].sale,
-          sale_to: res[7][0].sale,
+          price_from: res[4][0] ? res[4][0].price : defaultParams.price_from,
+          price_to: res[5][0] ? res[5][0].price : defaultParams.price_to,
+          sale_from: res[6][0] ? res[6][0].sale : defaultParams.sale_from,
+          sale_to: res[7][0] ? res[7][0].sale : defaultParams.sale_to
         }
       })
       .then(res => {
