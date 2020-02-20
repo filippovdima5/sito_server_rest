@@ -110,10 +110,10 @@ export async function facetFilters(ctx: any) {
       Products.find(objectWithoutFields(query, ['brand'])).distinct('brand'),
       Products.find(objectWithoutFields(query, ['size'])).distinct('size'),
       Products.find(objectWithoutFields(query, ['color'])).distinct('color'),
-      Products.find(objectWithoutFields(query, ['price_from'])).sort({price: 1}).limit(1),
-      Products.find(objectWithoutFields(query, ['price_to'])).sort({price: -1}).limit(1),
-      Products.find(objectWithoutFields(query, ['sale_from'])).sort({sale: 1}).limit(1),
-      Products.find(objectWithoutFields(query, ['sale_to'])).sort({sale: -1}).limit(1),
+      Products.find(objectWithoutFields(query, ['price'])).sort({price: 1}).limit(1),
+      Products.find(objectWithoutFields(query, ['price'])).sort({price: -1}).limit(1),
+      Products.find(objectWithoutFields(query, ['sale'])).sort({sale: 1}).limit(1),
+      Products.find(objectWithoutFields(query, ['sale'])).sort({sale: -1}).limit(1),
     ])
       .then(res => {
         return {
