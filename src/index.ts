@@ -19,11 +19,11 @@ if (process.env.NODE_ENV === 'production'){
 
 
 //Routes:
+require('./routs/user').init(app)
 require('./routs/products').init(app)
 require('./routs/search').init(app)
-require('./routs/user').init(app)
-require('./routs/env').init(app)
-require('./routs/out_api').init(app)
+
+
 
 
 // Listen:

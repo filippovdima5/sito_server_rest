@@ -7,10 +7,6 @@ import { Context } from 'koa'
 
 export interface IUserDocument extends Document{
   sex_id: 1 | 2 | null,
-  clothes: NullableRecord<keyof AllCategoriesClothes, number>,
-  shoes: NullableRecord<keyof AllCategoriesShoes, number>,
-  accessories: NullableRecord<keyof AllCategoriesAccessories, number>,
-  brands: NullableRecord<any, number>
 }
 
 export interface IUserModel extends Model<IUserDocument>{
@@ -22,21 +18,23 @@ const userScheme = new Schema({
     type: Number,
     enum: [1, 2, 0]
   },
-  clothes: {},
-  shoes: {},
-  accessories: {},
-  brands: {},
 }, {
   timestamps: true
 })
 
 userScheme.statics.getIdUser = async function getIdUser(ctx: Context): Promise<string> {
   const cookie = ctx.cookies.get('user')
-  if (cookie) return cookie
+  
+  if (cookie) {
+    const checkUser = await User.findOne({_id: cookie})
+    if (Boolean(checkUser)) return cookie
+  }
+  
+  
   const newUser = new User({})
   return newUser.save()
     .then(res => {
-      ctx.cookies.set('user', res._id)
+      ctx.cookies.set('user', res._id, { httpOnly: true, maxAge: 9999999999999})
       return res._id
     })
 }

@@ -1,11 +1,12 @@
 import Koa from 'koa'
 import Router from 'koa-router'
-import { userPost } from './user-post'
+import { userGet } from './user-get'
+import { userSet } from './user-set'
 
 
 const router = new Router({prefix: `/api/user`})
 
-// @ts-ignore
-router.post('/', userPost)
+router.get('/', userGet)
+router.post('/', userSet)
 
 exports.init = (app: Koa) => app.use(router.routes())
