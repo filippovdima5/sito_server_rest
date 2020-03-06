@@ -33,10 +33,12 @@ export async function allBrands(ctx: RouterContext) {
       }}
   ])
     .then(res => res.filter(item => (item.count > 10 && Boolean(item._id))) as Array<Brand>)
+    
     .then(res => {
       let c = (a: any) => 10 > a ? 2e4 + +a : a.charCodeAt(0);
       return res.sort((a, b) => c(a._id.charAt(0)) - c(b._id.charAt(0)))
     })
+    
     .then(res => {
       const arr: Array<{
         char: string,
@@ -67,6 +69,13 @@ export async function allBrands(ctx: RouterContext) {
       
       return arr
     })
+    
+    // .then(res => {
+    //   return res.map(item => ({
+    //     ...item,
+    //     brands: item.brands.sort((a, b) => a.charAt(1) - b.cha)
+    //   }))
+    // })
   
     .then(res => {
       ctx.body = res
