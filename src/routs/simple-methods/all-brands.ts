@@ -12,9 +12,7 @@ type Brand = {
 
 export async function allBrands(ctx: RouterContext) {
   const query = ctx.request.query
-  
-  console.log(query)
-  
+
   let sexId: number
   
   switch (query.sexId) {
@@ -26,7 +24,7 @@ export async function allBrands(ctx: RouterContext) {
   
   
   return await Products.aggregate([
-    {$match: {sex_id: sexId}},
+    {$match: {sex_id: {$in: [sexId, 0]}}},
     {$group: {
         _id: "$brand",
         count: {$sum: 1}
@@ -56,8 +54,6 @@ export async function allBrands(ctx: RouterContext) {
       res.forEach(({ _id, count }, index) => {
         if (index === 0) return
         
-        console.log(currentChar.toLowerCase(), _id.charAt(0).toLowerCase())
-        
         if (currentChar.toLowerCase() === _id.charAt(0).toLowerCase()) {
           arr[arr.length - 1].brands.push({ _id, count })
         }
@@ -70,12 +66,6 @@ export async function allBrands(ctx: RouterContext) {
       return arr
     })
     
-    // .then(res => {
-    //   return res.map(item => ({
-    //     ...item,
-    //     brands: item.brands.sort((a, b) => a.charAt(1) - b.cha)
-    //   }))
-    // })
   
     .then(res => {
       ctx.body = res

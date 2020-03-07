@@ -7,6 +7,7 @@ import { Context } from 'koa'
 
 export interface IUserDocument extends Document{
   sex_id: 1 | 2 | null,
+  likes: Array<string>,
 }
 
 export interface IUserModel extends Model<IUserDocument>{
@@ -18,6 +19,9 @@ const userScheme = new Schema({
     type: Number,
     enum: [1, 2, 0]
   },
+  likes: {
+    type: [String],
+  }
 }, {
   timestamps: true
 })
