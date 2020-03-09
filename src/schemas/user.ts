@@ -1,7 +1,5 @@
 import { Document, Model, Schema } from 'mongoose'
 import {mongoose} from '../libs/mongoose'
-import { NullableRecord } from '../types'
-import { AllCategoriesClothes, AllCategoriesShoes, AllCategoriesAccessories } from '../types'
 import { Context } from 'koa'
 
 
@@ -28,6 +26,7 @@ const userScheme = new Schema({
 
 userScheme.statics.getIdUser = async function getIdUser(ctx: Context): Promise<string> {
   const cookie = ctx.cookies.get('user')
+  console.log(cookie)
   
   if (cookie) {
     const checkUser = await User.findOne({_id: cookie})

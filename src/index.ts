@@ -23,6 +23,7 @@ require('./routs/user').init(app)
 require('./routs/products').init(app)
 require('./routs/search').init(app)
 require('./routs/simple-methods').init(app)
+require('./routs/seo').init(app)
 
 
 
