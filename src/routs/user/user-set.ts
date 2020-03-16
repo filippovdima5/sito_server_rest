@@ -1,5 +1,5 @@
-import { User } from '../../../schemas/user'
-import { sendOk } from '../../../libs'
+import { User } from '../../schemas/user'
+import { sendOk } from '../../libs'
 
 
 export async function userSet(ctx: any) {

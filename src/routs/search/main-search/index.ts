@@ -1,6 +1,6 @@
 import LRUCache from 'lru-cache'
 import { getCache } from '../../../helpers/get-cache'
-import { translRusToLatin } from './helpers/translit-rus-to-latin'
+import { translRusToLatin } from '../../../libs'
 import { Products } from '../../../schemas/products'
 import { queryNormalization } from '../../../helpers/query-normalization'
 
@@ -21,12 +21,12 @@ export async function mainSearch(ctx: any) {
   const finalParams = queryNormalization(ctx.request.body as ReqParams, {}, requiredFields)
   const {sex_id, phrase} = finalParams
 
+  
+  
   const sexQuery = (sex_id === 0) ? [0, 1, 2] : [0, sex_id]
   const phraseQuery: Array<any> = [phrase, translRusToLatin(phrase)]
     .map(item => (new RegExp(item, 'i')))
-
-
-
+  
   try {
     ctx.body = getCache(lru, finalParams)
     return null

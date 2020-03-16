@@ -1,10 +1,3 @@
-export type SexId = 0 | 1 | 2
-
-export type NullableRecord<K extends keyof any, T> = {
-  [P in K]?: T
-}
-
-
 export type Categories = {
   1: {
     clothes: {
@@ -78,7 +71,3 @@ export type Categories = {
     }
   }
 }
-
-export type AllCategoriesClothes = Categories['1']['clothes'] | Categories['2']['clothes']
-export type AllCategoriesAccessories = Categories['1']['accessories'] | Categories['2']['accessories']
-export type AllCategoriesShoes = Categories['1']['shoes'] | Categories['2']['shoes']

@@ -1,5 +1,5 @@
-import { User } from '../../../schemas/user'
-import { hideSpecialFields } from '../../../libs/hide-special-fields'
+import { User } from '../../schemas/user'
+import { hideSpecialFields } from '../../libs/hide-special-fields'
 
 
 export async function userGet(ctx: any) {

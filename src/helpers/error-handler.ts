@@ -7,7 +7,7 @@ export interface ExtendedError extends Error {
   status: number
 }
 
-export const createError = ({ message, status }: Options): ExtendedError => {
+export const errorHandler = ({ message, status }: Options): ExtendedError => {
   const error = new Error(message) as ExtendedError
   error.status = status ?? 500;
   throw error
