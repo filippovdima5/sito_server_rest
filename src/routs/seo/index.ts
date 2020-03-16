@@ -1,6 +1,6 @@
 import Koa from 'koa'
 import Router from 'koa-router'
-import { getSeo } from './getSeo'
+import { getSeo } from './get-seo'
 
 
 const router = new Router({ prefix: `/api/seo` })

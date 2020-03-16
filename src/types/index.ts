@@ -1,3 +1,7 @@
+
+
+
+
 export type Categories = {
   1: {
     clothes: {
