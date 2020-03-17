@@ -1,10 +1,10 @@
 import { Seo } from '../../schemas/seos'
-import LRU from 'lru'
 import { RouterContext } from 'koa-router'
 import { Pathname } from '../../schemas/seos'
 import {findCategory, findPathname} from './lib'
 import { createCache } from '../../helpers/create-cache'
 import { recordToCacheKey } from '../../helpers/record-to-cache-key'
+import LRU from 'lru'
 
 type SeoTags = {
   title: string,

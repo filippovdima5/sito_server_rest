@@ -1,3 +1,4 @@
+
 declare module 'lru' {
   class LRU<T> {
     constructor(opts: { max?: number, maxAge?: number})
@@ -9,7 +10,7 @@ declare module 'lru' {
     peek(key: string): T | undefined
     remove(key: string): T | undefined
     clear(): void
-    // on(event: 'evict', callback: (evicted: {key: string, value: T}) => void )
+    //on(event: 'evict', callback: (evicted: {key: string, value: T}) => void )
   }
   
   export default LRU
