@@ -10,11 +10,6 @@
     "strict": true,
     "noImplicitAny": false,
     "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "types": [
-      "./src/type-overrides.d.ts"
-    ]
-
-
+    "resolveJsonModule": true
   }
 }

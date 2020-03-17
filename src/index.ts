@@ -27,7 +27,6 @@ require('./routs/seo').init(app)
 
 
 
-
 // Listen:
 app.listen(config.get('server.port'), () => {
   console.log(`SITO_REST_SERVER started at port : ${config.get('server.port')}`)
