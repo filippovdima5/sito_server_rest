@@ -1,6 +1,7 @@
 import { RouterContext } from 'koa-router'
 import { Products } from '../../schemas/products'
-
+import { createCache } from '../../helpers/create-cache'
+import LRU from "lru"
 
 
 type Brand = {
@@ -8,21 +9,15 @@ type Brand = {
   count: number
 }
 
+type Request = Array<{
+  char: string,
+  brands: Array<Brand>
+}>
 
+const allBrandsLRU = new LRU<Request>({ max: 10, maxAge: 10 * 60 * 1000 })
+const cacheRender = createCache(allBrandsLRU)
 
-export async function allBrands(ctx: RouterContext) {
-  const query = ctx.request.query
-
-  let sexId: number
-  
-  switch (query.sexId) {
-    case '1':
-    case '2':
-      sexId = Number(query.sexId); break
-    default: throw Error('Не верный gender')
-  }
-  
-  
+async function renderAllBrands({ sexId }: { sexId: 1 | 2 }): Promise<Request> {
   return await Products.aggregate([
     {$match: {sex_id: {$in: [sexId, 0]}}},
     {$group: {
@@ -65,9 +60,24 @@ export async function allBrands(ctx: RouterContext) {
       
       return arr
     })
-    
+}
+
+export async function allBrands(ctx: RouterContext) {
+  const query = ctx.request.query
+
+  let sexId: 1 | 2
   
-    .then(res => {
-      ctx.body = res
-    })
+  switch (query.sexId) {
+    case '1':
+    case '2':
+      sexId = (Number(query.sexId) as 1 | 2); break
+    default: throw Error('Не верный gender')
+  }
+  
+  const cacheKey = sexId.toString()
+  ctx.body = await cacheRender(
+    () => renderAllBrands({ sexId }),
+    cacheKey,
+    () => []
+  )()
 }

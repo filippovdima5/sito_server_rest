@@ -1,4 +1,3 @@
-
 declare module 'lru' {
   class LRU<T> {
     constructor(opts: { max?: number, maxAge?: number})

@@ -1,10 +1,12 @@
-import LRUCache from 'lru-cache'
-import { getCache } from '../../../helpers/get-cache'
+import { recordToCacheKey } from '../../../helpers/record-to-cache-key'
 import { translRusToLatin } from '../../../libs'
 import { Products } from '../../../schemas/products'
 import { queryNormalization } from '../../../helpers/query-normalization'
+import LRU from 'lru'
+import {createCache} from '../../../helpers/create-cache'
+import { RouterContext } from 'koa-router'
 
-// ------------------------------------------------------------------
+
 type ReqParams = {
   sex_id: 1 | 2 | 0,
   phrase: string,
@@ -13,45 +15,42 @@ type ReqParams = {
 const requiredFields: Array<keyof ReqParams> = ['phrase', 'sex_id']
 
 
-// ------------------------------------------------------------------
+const mainSearchLRU = new LRU<any>({ max: 10, maxAge: 60 * 1000 })
+const cacheRender = createCache(mainSearchLRU)
 
-const lru = new LRUCache({max: 100, maxAge: 20 * 1000})
 
-export async function mainSearch(ctx: any) {
-  const finalParams = queryNormalization(ctx.request.body as ReqParams, {}, requiredFields)
-  const {sex_id, phrase} = finalParams
-
-  
-  
+async function renderMainSearch({ sex_id, phrase }: ReqParams ): Promise<any> {
   const sexQuery = (sex_id === 0) ? [0, 1, 2] : [0, sex_id]
   const phraseQuery: Array<any> = [phrase, translRusToLatin(phrase)]
     .map(item => (new RegExp(item, 'i')))
   
-  try {
-    ctx.body = getCache(lru, finalParams)
-    return null
-
-  } catch (e) {
-    return await Products.aggregate([
-      {$match: {sex_id: {$in: sexQuery}}},
-      {$facet: {
+  
+  return await Products.aggregate([
+    {$match: {sex_id: {$in: sexQuery}}},
+    {$facet: {
         // Пока бренды
         brands: [
           {$match: {brand: {$in: phraseQuery}}},
           {$group: {_id: "$brand", count: {$sum: 1}}},
           {$project: { title : "$_id", count : "$count", type: 'brand', _id: 0}},
         ]
-        }},
-    ])
-      .then(res => {
-        // todo: Научится делать это в aggregации
-        return [...res[0].brands]
-      })
-      .then(res => {
-        ctx.body = res
-        lru.set(JSON.stringify(finalParams), res)
-      })
-  }
+      }},
+  ])
+    .then(res => {
+      return [...res[0].brands]
+    })
+}
+
+
+export async function mainSearch(ctx: RouterContext) {
+  const finalParams = queryNormalization(ctx.request.body as ReqParams, {}, requiredFields)
+  
+  const cacheKey = recordToCacheKey(finalParams)
+  ctx.body = await cacheRender(
+    () => renderMainSearch(finalParams),
+    cacheKey,
+    () => []
+  )()
 }
 
 

@@ -1,10 +1,12 @@
 import {queryNormalization} from '../../../helpers/query-normalization'
-import LRUCache from 'lru-cache'
-import {getCache} from '../../../helpers/get-cache'
 import { setFacetItem, setFacetArrow } from './helpers/set-facet'
 import {Products} from '../../../schemas/products'
 import { objectWithoutFields } from '../../../helpers/object-without-fields'
 import {compareResults} from './helpers/compare-results'
+import { recordToCacheKey } from '../../../helpers/record-to-cache-key'
+import LRU from "lru"
+import {createCache} from '../../../helpers/create-cache'
+import { RouterContext } from 'koa-router'
 
 
 // ------------------------------------------------------------------
@@ -50,90 +52,59 @@ type Query = {
 
 
 
-const lruFirst = new LRUCache({max: 500, maxAge: 3 * 60 * 1000})
-const lruNext = new LRUCache({max: 100, maxAge: 10 * 1000})
+async function renderFiltersWithoutParams({ sexId }: { sexId: 1 | 2 }): Promise<any> {
+  return await Products
+    .aggregate([
+      {$match: {sex_id: {$in: [0, sexId]}}},
+      {$facet: {
+          categories: setFacetItem('category_id'),
+          brands: setFacetItem('brand'),
+          sizes: setFacetArrow('size'),
+          colors: setFacetArrow('color'),
+        }}
+    ])
+    .then(res => res[0])
+}
 
 
-
-export async function facetFilters(ctx: any) {
-  const finalParams = queryNormalization(ctx.request.body as ReqParams, defaultParams, requiredFields)
+async function renderFiltersWithParams(finalParams: ReqParams, firstRes: any): Promise<any> {
   const {sex_id, brands, categories, sizes, colors, price_from, price_to, sale_from, sale_to} = finalParams
-
-
+  
   const query: Query = {
     sex_id: {$in: [0, sex_id]},
     price: {$gte: price_from, $lte: price_to},
     sale: {$gte: sale_from, $lte: sale_to},
   }
-  if (brands) {
-    query.brand = {$in: brands}
-  }
-  if (categories) {
-    query.category_id = {$in: categories}
-  }
-  if (colors) {
-    query.color = {$in: colors}
-  }
-  if (sizes) {
-    query.size = {$in: sizes}
-  }
-
-  let firstRes: any // Первый запрос, без фильтрации кроме пола, потом сравниваем его результат с отфильтрованными и имеем инфу о доступности фильтров
-  let nextRes: any // Второй запрос
+  if (brands) query.brand = {$in: brands}
+  if (categories) query.category_id = {$in: categories}
+  if (colors) query.color = {$in: colors}
+  if (sizes) query.size = {$in: sizes}
   
-  try {
-    firstRes = getCache(lruFirst, sex_id)
-  } catch (e) {
-
-    firstRes = await Products
-      .aggregate([
-        {$match: {sex_id: {$in: [0, sex_id]}}},
-        {$facet: {
-            categories: setFacetItem('category_id'),
-            brands: setFacetItem('brand'),
-            sizes: setFacetArrow('size'),
-            colors: setFacetArrow('color'),
-          }}
-      ])
-      .then(res => {
-        lruFirst.set(sex_id, res[0])
-        return res[0]
-      })
-  }
   
-  try {
-    nextRes = getCache(lruNext, finalParams)
-  }
-  catch (e) {
-    nextRes = await Promise.all([
-      Products.find(objectWithoutFields(query, ['category_id'])).distinct('category_id'),
-      Products.find(objectWithoutFields(query, ['brand'])).distinct('brand'),
-      Products.find(objectWithoutFields(query, ['size'])).distinct('size'),
-      Products.find(objectWithoutFields(query, ['color'])).distinct('color'),
-      Products.find(objectWithoutFields(query, ['price'])).sort({price: 1}).limit(1),
-      Products.find(objectWithoutFields(query, ['price'])).sort({price: -1}).limit(1),
-      Products.find(objectWithoutFields(query, ['sale'])).sort({sale: 1}).limit(1),
-      Products.find(objectWithoutFields(query, ['sale'])).sort({sale: -1}).limit(1),
-    ])
-      .then(res => {
-        return {
-          categories: res[0],
-          brands: res[1],
-          sizes: res[2],
-          colors: res[3],
-          price_from: res[4][0] ? res[4][0].price : defaultParams.price_from,
-          price_to: res[5][0] ? res[5][0].price : defaultParams.price_to,
-          sale_from: res[6][0] ? res[6][0].sale : defaultParams.sale_from,
-          sale_to: res[7][0] ? res[7][0].sale : defaultParams.sale_to
-        }
-      })
-      .then(res => {
-        lruNext.set(JSON.stringify(finalParams), res)
-        return res
-      })
-  }
-
-  ctx.body = {
+  const nextRes = await Promise.all([
+    Products.find(objectWithoutFields(query, ['category_id'])).distinct('category_id'),
+    Products.find(objectWithoutFields(query, ['brand'])).distinct('brand'),
+    Products.find(objectWithoutFields(query, ['size'])).distinct('size'),
+    Products.find(objectWithoutFields(query, ['color'])).distinct('color'),
+    Products.find(objectWithoutFields(query, ['price'])).sort({price: 1}).limit(1),
+    Products.find(objectWithoutFields(query, ['price'])).sort({price: -1}).limit(1),
+    Products.find(objectWithoutFields(query, ['sale'])).sort({sale: 1}).limit(1),
+    Products.find(objectWithoutFields(query, ['sale'])).sort({sale: -1}).limit(1),
+  ])
+    .then(res => {
+      return {
+        categories: res[0],
+        brands: res[1],
+        sizes: res[2],
+        colors: res[3],
+        price_from: res[4][0] ? res[4][0].price : defaultParams.price_from,
+        price_to: res[5][0] ? res[5][0].price : defaultParams.price_to,
+        sale_from: res[6][0] ? res[6][0].sale : defaultParams.sale_from,
+        sale_to: res[7][0] ? res[7][0].sale : defaultParams.sale_to
+      }
+    })
+  
+  return ({
     categories: compareResults(firstRes.categories, nextRes.categories),
     brands: compareResults(firstRes.brands, nextRes.brands),
     sizes: compareResults(firstRes.sizes, nextRes.sizes),
@@ -142,7 +113,32 @@ export async function facetFilters(ctx: any) {
     price_to: nextRes.price_to,
     sale_from: nextRes.sale_from,
     sale_to: nextRes.sale_to,
-  }
+  })
+}
+
+
+const withoutParamsLRU = new LRU<any>({ max: 10, maxAge: 3 * 60 * 1000 })
+const cacheRenderOut = createCache(withoutParamsLRU)
+
+const withParamsLRU = new LRU<any>({ max: 10, maxAge: 2 * 60 * 1000 })
+const cacheRenderWith = createCache(withParamsLRU)
+
+
+export async function facetFilters(ctx: RouterContext) {
+  const finalParams = queryNormalization(ctx.request.body as ReqParams, defaultParams, requiredFields)
+  
+  const cacheKeyWithoutParams = finalParams.sex_id.toString()
+  const firstRes = await cacheRenderOut(
+    () => renderFiltersWithoutParams({ sexId: finalParams.sex_id }),
+    cacheKeyWithoutParams
+  )()
+  
+  
+  const cacheKeyWithParams = recordToCacheKey(finalParams)
+  ctx.body = await cacheRenderWith(
+    () => renderFiltersWithParams(finalParams, firstRes),
+    cacheKeyWithParams
+  )()
 }
 
 
