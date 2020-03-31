@@ -7,13 +7,11 @@ const app = new Koa()
 if (process.env.NODE_ENV === 'production'){
   require('./middlewares/koa-favicon').init(app)
   require('./middlewares/error-handler').init(app)
-  require('./middlewares/koa-static').init(app)
   require('./middlewares/koa-bodyparser').init(app)
 } else {
   require('./middlewares/koa-favicon').init(app)
   require('./middlewares/error-handler').init(app)
   require('./middlewares/koa-logger').init(app)
-  require('./middlewares/koa-static').init(app)
   require('./middlewares/koa-bodyparser').init(app)
 }
 
