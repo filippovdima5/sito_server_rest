@@ -4,7 +4,7 @@ module.exports = {
     },
 
     mongodb: {
-        uri: 'mongodb://localhost:27017/sito_v-2',
+        uri: 'mongodb://mongo-admin:24D1ma055x@84.201.185.241:27017/sito_v-2?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&ssl=false',
         debug: false,
     },
 
@@ -20,3 +20,5 @@ module.exports = {
         }
     }
 };
+
+
