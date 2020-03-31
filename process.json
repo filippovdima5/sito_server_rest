@@ -1,0 +1,18 @@
+{
+    "apps" : [
+    {
+        "name" : "sito-rest-server",
+        "script" : "npm run prod",
+        "exec_mode" : "cluster",
+        "instances" : 1,
+        "env": {
+            "PORT": 8080,
+            "NODE_ENV": "development"
+        },
+        "env_production": {
+            "PORT": 8080,
+            "NODE_ENV": "production"
+        }
+    }
+]
+}
