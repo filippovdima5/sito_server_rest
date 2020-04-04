@@ -51,7 +51,7 @@ type Query = {
   sale: {$gte: ReqParams['sale_from'], $lte: ReqParams['sale_to']},
   brand?: {$in: ReqParams['brands']},
   category_id?: {$in: ReqParams['categories']},
-  size?: {$in: ReqParams['sizes']},
+  sizes?: {$in: ReqParams['sizes']},
   color?: {$in: ReqParams['colors']},
 }
 
@@ -80,7 +80,7 @@ async function renderProductsList(finalParams: ReqParams): Promise<Request> {
   if (brands) query.brand = {$in: brands}
   if (categories) query.category_id = {$in: categories}
   if (colors) query.color = {$in: colors}
-  if (sizes) query.size = {$in: sizes}
+  if (sizes) query.sizes = {$in: sizes}
   
   const paginate_info = [
     {$group: {_id: null, count: {$sum: 1}}},

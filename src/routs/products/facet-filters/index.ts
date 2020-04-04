@@ -45,7 +45,7 @@ type Query = {
   sale: {$gte: ReqParams['sale_from'], $lte: ReqParams['sale_to']},
   brand?: {$in: ReqParams['brands']},
   category_id?: {$in: ReqParams['categories']},
-  size?: {$in: ReqParams['sizes']},
+  sizes?: {$in: ReqParams['sizes']},
   color?: {$in: ReqParams['colors']},
 }
 // ------------------------------------------------------------------
@@ -59,7 +59,7 @@ async function renderFiltersWithoutParams({ sexId }: { sexId: 1 | 2 }): Promise<
       {$facet: {
           categories: setFacetItem('category_id'),
           brands: setFacetItem('brand'),
-          sizes: setFacetArrow('size'),
+          sizes: setFacetArrow('sizes'),
           colors: setFacetArrow('color'),
         }}
     ])
@@ -78,13 +78,13 @@ async function renderFiltersWithParams(finalParams: ReqParams, firstRes: any): P
   if (brands) query.brand = {$in: brands}
   if (categories) query.category_id = {$in: categories}
   if (colors) query.color = {$in: colors}
-  if (sizes) query.size = {$in: sizes}
+  if (sizes) query.sizes = {$in: sizes}
   
   
   const nextRes = await Promise.all([
     Products.find(objectWithoutFields(query, ['category_id'])).distinct('category_id'),
     Products.find(objectWithoutFields(query, ['brand'])).distinct('brand'),
-    Products.find(objectWithoutFields(query, ['size'])).distinct('size'),
+    Products.find(objectWithoutFields(query, ['sizes'])).distinct('sizes'),
     Products.find(objectWithoutFields(query, ['color'])).distinct('color'),
     Products.find(objectWithoutFields(query, ['price'])).sort({price: 1}).limit(1),
     Products.find(objectWithoutFields(query, ['price'])).sort({price: -1}).limit(1),
