@@ -5,7 +5,7 @@ module.exports = {
     },
 
     mongodb: {
-        uri: 'mongodb://mongo-admin:24D1ma055x@82.148.31.78:27017/products?authSource=admin',
+        uri: 'mongodb://mongo-root:24D1ma055x@82.148.31.78:27017/products?authSource=admin',
         debug: false,
     },
 
