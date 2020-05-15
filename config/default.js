@@ -4,10 +4,11 @@ module.exports = {
     port: 8080,
   },
 
-    mongodb: {
-        uri: 'mongodb://localhost:27017/products',
-        debug: true,
-    },
+  mongodb: {
+    uri: 'mongodb://localhost:27017/sito-prod-products',
+
+    debug: true,
+  },
 
 
   crypto: {
@@ -16,4 +17,4 @@ module.exports = {
       iterations: 10
     }
   }
-};
+}

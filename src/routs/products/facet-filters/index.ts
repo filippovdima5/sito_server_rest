@@ -1,12 +1,12 @@
-import {queryNormalization} from '../../../helpers/query-normalization'
-import { setFacetItem, setFacetArrow } from './helpers/set-facet'
-import {Products} from '../../../schemas/products'
-import { objectWithoutFields } from '../../../helpers/object-without-fields'
-import {compareResults} from './helpers/compare-results'
-import { recordToCacheKey } from '../../../helpers/record-to-cache-key'
-import LRU from "lru"
-import {createCache} from '../../../helpers/create-cache'
+import LRU from 'lru'
 import { RouterContext } from 'koa-router'
+import { queryNormalization } from '../../../helpers/query-normalization'
+import { Products } from '../../../schemas/products'
+import { objectWithoutFields } from '../../../helpers/object-without-fields'
+import { recordToCacheKey } from '../../../helpers/record-to-cache-key'
+import { createCache } from '../../../helpers/create-cache'
+import { compareResults } from './helpers/compare-results'
+import { setFacetItem, setFacetArrow } from './helpers/set-facet'
 
 
 // ------------------------------------------------------------------
@@ -55,30 +55,30 @@ type Query = {
 async function renderFiltersWithoutParams({ sexId }: { sexId: 1 | 2 }): Promise<any> {
   return await Products
     .aggregate([
-      {$match: {sex_id: {$in: [0, sexId]}}},
-      {$facet: {
-          categories: setFacetItem('category_id'),
-          brands: setFacetItem('brand'),
-          sizes: setFacetArrow('sizes'),
-          colors: setFacetArrow('color'),
-        }}
+      { $match: { sex_id: { $in: [0, sexId] } } },
+      { $facet: {
+        categories: setFacetItem('category_id'),
+        brands: setFacetItem('brand'),
+        sizes: setFacetArrow('sizes'),
+        colors: setFacetArrow('color'),
+      } }
     ])
     .then(res => res[0])
 }
 
 
 async function renderFiltersWithParams(finalParams: ReqParams, firstRes: any): Promise<any> {
-  const {sex_id, brands, categories, sizes, colors, price_from, price_to, sale_from, sale_to} = finalParams
+  const { sex_id, brands, categories, sizes, colors, price_from, price_to, sale_from, sale_to } = finalParams
   
   const query: Query = {
-    sex_id: {$in: [0, sex_id]},
-    price: {$gte: price_from, $lte: price_to},
-    sale: {$gte: sale_from, $lte: sale_to},
+    sex_id: { $in: [0, sex_id] },
+    price: { $gte: price_from, $lte: price_to },
+    sale: { $gte: sale_from, $lte: sale_to },
   }
-  if (brands) query.brand = {$in: brands}
-  if (categories) query.category_id = {$in: categories}
-  if (colors) query.color = {$in: colors}
-  if (sizes) query.sizes = {$in: sizes}
+  if (brands) query.brand = { $in: brands }
+  if (categories) query.category_id = { $in: categories }
+  if (colors) query.color = { $in: colors }
+  if (sizes) query.sizes = { $in: sizes }
   
   
   const nextRes = await Promise.all([
@@ -86,23 +86,21 @@ async function renderFiltersWithParams(finalParams: ReqParams, firstRes: any): P
     Products.find(objectWithoutFields(query, ['brand'])).distinct('brand'),
     Products.find(objectWithoutFields(query, ['sizes'])).distinct('sizes'),
     Products.find(objectWithoutFields(query, ['color'])).distinct('color'),
-    Products.find(objectWithoutFields(query, ['price'])).sort({price: 1}).limit(1),
-    Products.find(objectWithoutFields(query, ['price'])).sort({price: -1}).limit(1),
-    Products.find(objectWithoutFields(query, ['sale'])).sort({sale: 1}).limit(1),
-    Products.find(objectWithoutFields(query, ['sale'])).sort({sale: -1}).limit(1),
+    Products.find(objectWithoutFields(query, ['price'])).sort({ price: 1 }).limit(1),
+    Products.find(objectWithoutFields(query, ['price'])).sort({ price: -1 }).limit(1),
+    Products.find(objectWithoutFields(query, ['sale'])).sort({ sale: 1 }).limit(1),
+    Products.find(objectWithoutFields(query, ['sale'])).sort({ sale: -1 }).limit(1),
   ])
-    .then(res => {
-      return {
-        categories: res[0],
-        brands: res[1],
-        sizes: res[2],
-        colors: res[3],
-        price_from: res[4][0] ? res[4][0].price : defaultParams.price_from,
-        price_to: res[5][0] ? res[5][0].price : defaultParams.price_to,
-        sale_from: res[6][0] ? res[6][0].sale : defaultParams.sale_from,
-        sale_to: res[7][0] ? res[7][0].sale : defaultParams.sale_to
-      }
-    })
+    .then(res => ({
+      categories: res[0],
+      brands: res[1],
+      sizes: res[2],
+      colors: res[3],
+      price_from: res[4][0] ? res[4][0].price : defaultParams.price_from,
+      price_to: res[5][0] ? res[5][0].price : defaultParams.price_to,
+      sale_from: res[6][0] ? res[6][0].sale : defaultParams.sale_from,
+      sale_to: res[7][0] ? res[7][0].sale : defaultParams.sale_to
+    }))
   
   return ({
     categories: compareResults(firstRes.categories, nextRes.categories),

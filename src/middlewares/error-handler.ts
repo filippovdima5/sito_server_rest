@@ -1,18 +1,17 @@
-import Koa = require('koa');
+import Koa = require('koa')
 
 exports.init = (app: any) =>app.use(async (ctx: Koa.BaseContext, next: () => Promise<any>) => {
   try {
-    await next();
+    await next()
   } catch (e) {
     if (e.status){
-      ctx.body = e.message;
-      ctx.status = e.status;
+      ctx.body = e.message
+      ctx.status = e.status
     } else {
-      ctx.body = 'One of us is a teapot!';
-      ctx.status = 500;
+      ctx.body = 'One of us is a teapot!'
+      ctx.status = 500
       //console.log(e.message, e.stack);
-      console.log(e.message, 'Нужно выводить ошибки в логи mongoDB!')
     }
   }
 
-});
+})

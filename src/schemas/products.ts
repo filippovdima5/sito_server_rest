@@ -1,5 +1,5 @@
 import { Document, Model, Schema } from 'mongoose'
-import {mongoose} from '../libs/mongoose'
+import { mongoose } from '../libs/mongoose'
 
 
 export interface ProductsInterface extends Document {
@@ -31,8 +31,8 @@ const productsScheme = new Schema({
   img: [String],
   url: String
 },
-  {
-    timestamps: true
-  })
+{
+  timestamps: true
+})
 
-export const Products = mongoose.model<ProductsInterface>('Products', productsScheme)
+export const Products = mongoose.model<ProductsInterface>('Products-old', productsScheme)
