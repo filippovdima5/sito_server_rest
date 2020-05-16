@@ -10,7 +10,7 @@ exports.init = (app: any) =>app.use(async (ctx: Koa.BaseContext, next: () => Pro
     } else {
       ctx.body = 'One of us is a teapot!'
       ctx.status = 500
-      //console.log(e.message, e.stack);
+      console.error(e.message, e.stack)
     }
   }
 

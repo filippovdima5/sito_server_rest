@@ -1,4 +1,35 @@
-export function customQueryParse(search: string) {
+import { SexId, ValueOf } from '../types'
+import { unisexCategoryKeys } from '../constants'
+
+
+const sortTypes = {
+  'create_up': { createdAt: 1 },
+  'create_down': { createdAt: -1 },
+  'price_up': { price: 1 },
+  'price_down': { price: -1 },
+  'sale_up' : { sale: 1 },
+  'sale_down' : { sale: -1 },
+} as const
+
+export type SortTypes = ValueOf<typeof sortTypes>
+
+type QueryFields = {
+  sex_id?: SexId,
+  price_from?: number,
+  price_to?: number,
+  sale_from?: number,
+  sale_to?: number,
+  page?: number,
+  limit?: number,
+  brands?: Array<string>,
+  sizes?: Array<string>,
+  categories?: Array<keyof typeof unisexCategoryKeys>,
+  sort?: SortTypes,
+}
+
+
+
+export function customQueryParse(search: string): QueryFields {
   if (!search || search === '?') return {}
   
   let foundFields: any = {}
@@ -14,8 +45,23 @@ export function customQueryParse(search: string) {
     return foundFields
   }
   
+  Object.entries(foundFields).forEach(([key, value]) => {
+    switch (key) {
+      case 'sex_id':
+      case 'price_from':
+      case 'price_to':
+      case 'sale_from':
+      case 'sale_to':
+      case 'page':
+      case 'limit': return (foundFields[key] = parseNumber(value as string))
+      case 'brands':
+      case 'sizes': return (foundFields[key] = parseArrayString(value as string))
+      case 'categories': return (foundFields[key] = parseArrayNumber(value as string))
+      case 'sort': return (foundFields[key] = sortTypes[value as keyof typeof sortTypes])
+    }
+  })
   
-  
+  return foundFields
 }
 
 
@@ -27,5 +73,10 @@ function parseNumber(str: string): number | null {
 function parseArrayNumber(str: string): Array<number> | null {
   if (!str) return null
   return str.split(',').filter(i => !isNaN(Number(i))).map(i => Number(i))
+}
+
+function parseArrayString(str: string): Array<string> |  null {
+  if (!str) return null
+  return str.split(' | ')
 }
 
