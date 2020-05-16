@@ -8,6 +8,7 @@ import { createCache } from '../helpers/create-cache'
 const ONE_HOURS = 1000 * 60 * 60
 const route = new Router()
 
+// $TODO: Вынести в nginx:
 const lru = new LRU<Array<string>>({ max: 6, maxAge: ONE_HOURS })
 const getCache = createCache(lru)
 
