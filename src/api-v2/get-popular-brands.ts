@@ -25,10 +25,15 @@ export { route as getPopularBrands }
 
 async function getBrands(sex_id: SexId, limit: number): Promise<Array<string>> {
   return ProdProducts.aggregate([
+    { $match: { sex_id: Number(sex_id) } },
     { $group: { _id: '$brand', count: { $sum: 1 } } },
     { $sort: { count: -1 } },
     { $limit: Number(limit) },
     { $group: {   _id: 'null', brands: { $addToSet: '$_id' } } }
   ])
-    .then(res => res[0].brands as Array<string>)
+    .then(res => {
+      if (!res || !Array.isArray(res)) return [] as Array<string>
+      if (!res[0]) return [] as Array<string>
+      return  res[0].brands as Array<string>
+    })
 }
