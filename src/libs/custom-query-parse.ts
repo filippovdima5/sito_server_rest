@@ -34,9 +34,10 @@ export function customQueryParse(search: string): QueryFields {
   
   let foundFields: any = {}
   
+  
   try {
     foundFields = Object.fromEntries(
-      search.replace('?', '')
+      decodeURI(search).replace('?', '')
         .split('&')
         .map(i => i.split('='))
     )
