@@ -3,12 +3,12 @@ import { unisexCategoryKeys } from '../constants'
 
 
 const sortTypes = {
-  'create_up': { createdAt: 1 },
-  'create_down': { createdAt: -1 },
-  'price_up': { price: 1 },
-  'price_down': { price: -1 },
-  'sale_up' : { sale: 1 },
-  'sale_down' : { sale: -1 },
+  'create_up': { createdAt: -1 },
+  'create_down': { createdAt: 1 },
+  'price_up': { price: -1 },
+  'price_down': { price: 1 },
+  'sale_up' : { sale: -1 },
+  'sale_down' : { sale: 1 },
 } as const
 
 export type SortTypes = ValueOf<typeof sortTypes>

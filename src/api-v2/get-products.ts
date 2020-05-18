@@ -5,6 +5,7 @@ import { ProdProducts } from '../schemas/prod-products'
 import { createCache } from '../helpers/create-cache'
 import { customQueryParse, SortTypes } from '../libs/custom-query-parse'
 import { unisexCategoryKeys } from '../constants'
+import { setRangeQuery } from '../libs/get-query'
 
 
 const FIVE_MINUTES = 1000 * 60 * 5
@@ -62,21 +63,8 @@ async function getProducts(params: Params) {
   const offset = (params.page - 1) * params.limit
   
   const query: any = { sex_id: params.sex_id }
-  const priceQuery: any = {}
-  const saleQuery: any = {}
-  
-  if (params.price_from || params.sale_from) {
-    if (params.price_from) priceQuery['$gte'] = params.price_from
-    if (params.price_to) priceQuery['$lte'] = params.price_to
-    query['price'] = priceQuery
-  }
-  
-  if (params.sale_from || params.sale_to) {
-    if (params.sale_from) saleQuery['$gte'] = params.sale_from
-    if (params.sale_to) saleQuery['$lte'] = params.sale_to
-    query['sale'] = saleQuery
-  }
-  
+  setRangeQuery(params, query)
+
   if (params.categories && params.categories.length > 0) query['category_id'] = { $in: params.categories }
   if (params.brands && params.brands.length > 0) query['brand'] = { $in: params.brands }
   if (params.sizes && params.sizes.length > 0) query['sizes'] = { $in: params.sizes }
