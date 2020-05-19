@@ -25,6 +25,9 @@ type QueryFields = {
   sizes?: Array<string>,
   categories?: Array<keyof typeof unisexCategoryKeys>,
   sort?: SortTypes,
+  
+  brand_search?: string,
+  brand_all?: boolean,
 }
 
 
@@ -59,6 +62,7 @@ export function customQueryParse(search: string): QueryFields {
       case 'sizes': return (foundFields[key] = parseArrayString(value as string))
       case 'categories': return (foundFields[key] = parseArrayNumber(value as string))
       case 'sort': return (foundFields[key] = sortTypes[value as keyof typeof sortTypes])
+      default: return (foundFields[key] = parseOtherStrings(value as string))
     }
   })
   
@@ -79,5 +83,15 @@ function parseArrayNumber(str: string): Array<number> | null {
 function parseArrayString(str: string): Array<string> |  null {
   if (!str) return null
   return str.split(' | ')
+}
+
+function parseOtherStrings(str: string): string | number | boolean | null {
+  if (str.length > 20) return null
+  if (!isNaN(Number(str))) return Number(str)
+  switch (str) {
+    case 'true': return true
+    case 'false': return false
+  }
+  return str
 }
 
