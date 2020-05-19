@@ -28,6 +28,7 @@ type QueryFields = {
   
   brand_search?: string,
   brand_all?: boolean,
+  not_size?: boolean,
 }
 
 
@@ -86,6 +87,7 @@ function parseArrayString(str: string): Array<string> |  null {
 }
 
 function parseOtherStrings(str: string): string | number | boolean | null {
+  if (!str) return null
   if (str.length > 20) return null
   if (!isNaN(Number(str))) return Number(str)
   switch (str) {

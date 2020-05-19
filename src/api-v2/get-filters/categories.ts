@@ -17,6 +17,8 @@ export type ParamsCategoriesFilters = {
   
   brands?: Array<string>,
   sizes?: Array<string>,
+  
+  not_size?: boolean,
 }
 
 
@@ -28,10 +30,10 @@ export const getCacheCategories = createCache(lru)
 
 // region route:
 route.get('/', async (ctx: RouterContext) => {
-  const { sex_id, sale_to, brands, sizes, price_from, price_to, sale_from } = customQueryParse(ctx.search)
+  const { sex_id, sale_to, brands, sizes, price_from, price_to, sale_from, not_size } = customQueryParse(ctx.search)
   if ( !sex_id ) return ctx.throw('Не все параметры')
   
-  const params: ParamsCategoriesFilters = { sex_id, sale_to, brands, sizes, price_from, price_to, sale_from }
+  const params: ParamsCategoriesFilters = { sex_id, sale_to, brands, sizes, price_from, price_to, sale_from, not_size }
   ctx.body = await getCacheCategories(
     () => getCategories(params),
     JSON.stringify(params),
@@ -49,7 +51,15 @@ export async function getCategories(params: ParamsCategoriesFilters) {
   setRangeQuery(params, query)
   
   if (params.brands && params.brands.length > 0) query['brand'] = { $in: params.brands }
-  if (params.sizes && params.sizes.length > 0) query['sizes'] = { $in: params.sizes }
+  
+  let sizeSearchArr: Array<any> = []
+  if ((params.sizes && params.sizes.length > 0) || (params.not_size)) {
+    if (params.sizes && params.sizes.length > 0) sizeSearchArr = params.sizes
+    if (params.not_size) { sizeSearchArr.push([]) }
+    query['sizes'] = { $in: sizeSearchArr }
+  }
+  
+
   
   return ProdProducts.aggregate([
     { $match: query },

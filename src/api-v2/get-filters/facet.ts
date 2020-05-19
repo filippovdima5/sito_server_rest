@@ -25,6 +25,8 @@ type Params = {
   size_all?: boolean,
   brand_search?: string,
   brand_all?: boolean,
+  
+  not_size?: boolean,
 }
 
 
@@ -42,7 +44,7 @@ const route = new Router()
 // region route:
 route.get('/', async (ctx: RouterContext) => {
   const {
-    sex_id, sale_to, categories, brands, sizes, price_from, price_to, sale_from, brand_all, brand_search
+    sex_id, sale_to, categories, brands, sizes, price_from, price_to, sale_from, brand_all, brand_search, not_size
   } = customQueryParse(ctx.search)
   
   if ( !sex_id ) return ctx.throw('Не все параметры')
@@ -50,7 +52,7 @@ route.get('/', async (ctx: RouterContext) => {
   
   ctx.body = await getCache(
     () => getFacetFilters({
-      sale_to, sex_id, price_from, price_to, sale_from, categories, brands, sizes, brand_all, brand_search
+      sale_to, sex_id, price_from, price_to, sale_from, categories, brands, sizes, brand_all, brand_search, not_size
     }),
     ctx.url,
     () => emptyResponse
@@ -63,11 +65,11 @@ export { route as getFacetFilters }
 
 // region method:
 async function getFacetFilters({
-  brand_search, brand_all,  brands, categories, sale_from, price_to, price_from, sex_id, sale_to, sizes
+  brand_search, brand_all,  brands, categories, sale_from, price_to, price_from, sex_id, sale_to, sizes, not_size
 }: Params) {
-  const categoryParams: ParamsCategoriesFilters = { brands, price_from, price_to, sale_from, sale_to, sex_id, sizes }
+  const categoryParams: ParamsCategoriesFilters = { brands, price_from, price_to, sale_from, sale_to, sex_id, sizes, not_size }
   const sizeParams: ParamsSizesFilters = {  brands, categories, price_from, price_to, sale_from, sale_to, sex_id }
-  const brandParams: ParamsBrandsFilters = { brand_all, brand_search, categories, price_from, price_to, sale_from, sale_to, sex_id, sizes }
+  const brandParams: ParamsBrandsFilters = { brand_all, brand_search, categories, price_from, price_to, sale_from, sale_to, sex_id, sizes, not_size }
   
   return Promise.all([
     getCacheCategories(() => getCategories(categoryParams), JSON.stringify(categoryParams), () => [])(),

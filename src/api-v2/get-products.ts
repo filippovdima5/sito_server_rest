@@ -27,7 +27,7 @@ const getCache = createCache(lru)
 
 
 route.get('/', async (ctx: RouterContext) => {
-  const { sex_id, limit, sort, page, sale_to, categories, brands, sizes, price_from, price_to, sale_from } = customQueryParse(ctx.search)
+  const { sex_id, limit, sort, page, sale_to, categories, brands, sizes, price_from, price_to, sale_from, not_size } = customQueryParse(ctx.search)
   
   
   if (!sex_id || !limit || !sort || !page) return ctx.throw('Не все параметры')
@@ -35,7 +35,7 @@ route.get('/', async (ctx: RouterContext) => {
   
   
   ctx.body = await getCache(
-    () => getProducts({ limit, sort, sizes, brands, categories, sale_to, sale_from, price_to, price_from, sex_id, page }),
+    () => getProducts({ limit, sort, sizes, brands, categories, sale_to, sale_from, price_to, price_from, sex_id, page, not_size }),
     ctx.url
   )()
 })
@@ -57,6 +57,8 @@ type Params = {
   price_to?: number,
   sale_from?: number,
   sale_to?: number,
+  
+  not_size?: boolean,
 }
 
 async function getProducts(params: Params) {
@@ -67,7 +69,13 @@ async function getProducts(params: Params) {
 
   if (params.categories && params.categories.length > 0) query['category_id'] = { $in: params.categories }
   if (params.brands && params.brands.length > 0) query['brand'] = { $in: params.brands }
-  if (params.sizes && params.sizes.length > 0) query['sizes'] = { $in: params.sizes }
+  
+  let sizeSearchArr: Array<any> = []
+  if ((params.sizes && params.sizes.length > 0) || (params.not_size)) {
+    if (params.sizes && params.sizes.length > 0) sizeSearchArr = params.sizes
+    if (params.not_size) { sizeSearchArr.push([]) }
+    query['sizes'] = { $in: sizeSearchArr }
+  }
   
   return ProdProducts.aggregate([
     { $match: query },
