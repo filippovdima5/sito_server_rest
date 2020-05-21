@@ -5,12 +5,14 @@ import { getFacetFilters } from './get-filters/facet'
 import { getBrandFilters } from './get-filters/brands'
 import { getSizesFilters } from './get-filters/sizes'
 import { getCategoriesFilters } from './get-filters/categories'
+import { getBrandsByChar } from './get-brands-by-char'
 
 
 const route = new Router({ prefix: '/api/v2' })
 
 route.use('/popular-brands', getPopularBrands.routes())
 route.use('/products', getProducts.routes())
+route.use('/brands-by-char', getBrandsByChar.routes())
 
 /** FILTERS:*/
 route.use('/facet-filters', getFacetFilters.routes())
