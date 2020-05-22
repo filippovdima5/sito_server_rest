@@ -11,6 +11,7 @@ import { sessionMount } from './session/mount'
 import { sessionGetById } from './session/get-by-id'
 import { setLike } from './session/set-like'
 import { getLikeProducts } from './get-like-products'
+import { getMetaTags } from './meta-tags/get-meta-tags'
 
 
 const route = new Router({ prefix: '/api/v2' })
@@ -35,5 +36,8 @@ route.use('/search-brands', searchBrands.routes())
 route.use('/session/mount', sessionMount.routes())
 route.use('/session/get-by-id', sessionGetById.routes())
 route.use('/session/set-like', setLike.routes())
+
+/** SEO: */
+route.use('/meta-tags', getMetaTags.routes())
 
 export { route as routerApiV2 }
