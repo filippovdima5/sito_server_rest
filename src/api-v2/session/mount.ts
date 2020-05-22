@@ -17,7 +17,7 @@ route.get('/', async (ctx: RouterContext) => {
   
   const { sex_id } = ctx.query
   
-  const newSession = new Session({ sex_id: sex_id ?? null, like_products: [] })
+  const newSession = new Session({ sex_id: sex_id ?? null, like_products: [], expires: new Date() })
   return newSession.save()
     .then(res => {
       ctx.cookies.set('session-sito', res._id, {

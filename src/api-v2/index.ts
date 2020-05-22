@@ -10,6 +10,7 @@ import { searchBrands } from './search/brands'
 import { sessionMount } from './session/mount'
 import { sessionGetById } from './session/get-by-id'
 import { setLike } from './session/set-like'
+import { getLikeProducts } from './get-like-products'
 
 
 const route = new Router({ prefix: '/api/v2' })
@@ -17,7 +18,7 @@ const route = new Router({ prefix: '/api/v2' })
 route.use('/popular-brands', getPopularBrands.routes())
 route.use('/products', getProducts.routes())
 route.use('/brands-by-char', getBrandsByChar.routes())
-
+route.use('/like-products', getLikeProducts.routes())
 
 /** FILTERS:*/
 route.use('/facet-filters', getFacetFilters.routes())

@@ -10,7 +10,7 @@ export const ONE_WEEK_MILLISECONDS = 1000 * 60 * 60 * 24 * 7
 
 export interface SessionType {
   sex_id?: SexId,
-  like_products?: Array<string>,
+  like_products: Array<string>,
 }
 
 export interface SessionInterface extends Document, SessionType {}
@@ -21,11 +21,12 @@ export interface SessionModel extends Model<SessionInterface>{
 const SessionSchema = new Schema({
   sex_id: Number,
   like_products: [String],
+  expires: { type: Date, expires: ONE_WEEK_MILLISECONDS / 1000 }
 }, {
   timestamps: true
 })
 
-SessionSchema.index({ createdAt: 1 },{ expireAfterSeconds: ONE_WEEK_MILLISECONDS / 1000 })
+
 
 SessionSchema.statics.setIdSession = async function getIdSession(ctx: RouterContext): Promise<string> {
   const cookie = ctx.cookies.get('session-sito')
