@@ -1,6 +1,6 @@
 import { Document,  Schema, SchemaDefinition } from 'mongoose'
-import { SexId } from '../types'
-import { mongoose } from '../libs/mongoose'
+import { SexId } from '../../types'
+import { mongoose } from '../../libs/mongoose'
 
 
 export interface ProdProductType  {
@@ -52,5 +52,5 @@ ProdProductsScheme.index({ sex_id: 1 })
 ProdProductsScheme.index({ category_num: 1 })
 
 
-export const ProdProducts = mongoose.model<ProdProductInterface>('Products', ProdProductsScheme)
+export const Products = mongoose.model<ProdProductInterface>('Products', ProdProductsScheme)
 

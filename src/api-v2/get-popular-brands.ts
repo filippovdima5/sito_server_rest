@@ -1,7 +1,7 @@
 import Router, { RouterContext } from 'koa-router'
 import LRU from 'lru'
 import { SexId } from '../types'
-import { ProdProducts } from '../schemas/prod-products'
+import { Products } from '../schemas/v2/products'
 import { createCache } from '../helpers/create-cache'
 
 
@@ -25,7 +25,7 @@ export { route as getPopularBrands }
 
 
 async function getBrands(sex_id: SexId, limit: number): Promise<Array<string>> {
-  return ProdProducts.aggregate([
+  return Products.aggregate([
     { $match: { sex_id: Number(sex_id) } },
     { $group: { _id: '$brand', count: { $sum: 1 } } },
     { $sort: { count: -1 } },

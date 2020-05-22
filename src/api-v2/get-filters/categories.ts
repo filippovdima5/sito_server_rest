@@ -1,7 +1,7 @@
 import Router, { RouterContext } from 'koa-router'
 import LRU from 'lru'
 import { SexId } from '../../types'
-import { ProdProducts } from '../../schemas/prod-products'
+import { Products } from '../../schemas/v2/products'
 import { createCache } from '../../helpers/create-cache'
 import { customQueryParse } from '../../libs/custom-query-parse'
 import { setRangeQuery } from '../../libs/get-query'
@@ -61,7 +61,7 @@ export async function getCategories(params: ParamsCategoriesFilters) {
   
 
   
-  return ProdProducts.aggregate([
+  return Products.aggregate([
     { $match: query },
     { $group: { _id: '$category_id'  } },
     { $group: {   _id: 'null', arr: { $addToSet: '$_id' } } }

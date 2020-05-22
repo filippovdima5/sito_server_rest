@@ -1,6 +1,6 @@
 import Router, { RouterContext } from 'koa-router'
 import LRU from 'lru'
-import { ProdProducts } from '../schemas/prod-products'
+import { Products } from '../schemas/v2/products'
 import { createCache } from '../helpers/create-cache'
 import { translRusToLatin } from '../libs'
 
@@ -10,7 +10,7 @@ const TWO_HOURS = 1000 * 60 * 60 * 2
 const route = new Router()
 
 // $TODO: Вынести в nginx:
-const lru = new LRU<Array<any>>({ max: 6, maxAge: TWO_HOURS })
+const lru = new LRU<Array<any>>({ max: 100, maxAge: TWO_HOURS })
 const getCache = createCache(lru)
 
 // region
@@ -36,7 +36,7 @@ async function getBrandsByChar(sex_id: number, phrase?: string): Promise<any> {
   }
 
   
-  return ProdProducts.aggregate([
+  return Products.aggregate([
     { $match: query },
     { $sort: { brand: -1 } },
     { $project: { char: { $toUpper: '$brand' }, brand: '$brand'  } },

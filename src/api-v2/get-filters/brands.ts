@@ -6,7 +6,7 @@ import { SexId } from '../../types'
 import { unisexCategoryKeys } from '../../constants'
 import { setRangeQuery } from '../../libs/get-query'
 import { translRusToLatin } from '../../libs'
-import { ProdProducts } from '../../schemas/prod-products'
+import { Products } from '../../schemas/v2/products'
 import { LIMIT_FILTER_ITEMS, lruConfig } from './constants'
 
 
@@ -73,7 +73,7 @@ export async function getBrands(params: ParamsBrandsFilters) {
     
   }
   
-  return ProdProducts.aggregate(genAggregate(query, params.brand_all))
+  return Products.aggregate(genAggregate(query, params.brand_all))
     .then(res => {
       if (!res) return []
       if (!res[0]) return []

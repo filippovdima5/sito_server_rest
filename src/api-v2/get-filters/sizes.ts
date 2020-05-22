@@ -5,7 +5,7 @@ import { customQueryParse } from '../../libs/custom-query-parse'
 import { SexId } from '../../types'
 import { unisexCategoryKeys } from '../../constants'
 import { setRangeQuery } from '../../libs/get-query'
-import { ProdProducts } from '../../schemas/prod-products'
+import { Products } from '../../schemas/v2/products'
 import { lruConfig } from './constants'
 
 
@@ -54,7 +54,7 @@ export async function getSizes(params: ParamsSizesFilters) {
   if (params.brands && params.brands.length > 0) query['brand'] = { $in: params.brands }
   
   
-  return ProdProducts.aggregate(genAggregate(query))
+  return Products.aggregate(genAggregate(query))
     .then(res => {
       if (!res) return []
       if (!res[0]) return []

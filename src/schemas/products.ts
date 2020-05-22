@@ -1,4 +1,4 @@
-import { Document, Model, Schema } from 'mongoose'
+import { Document, Schema } from 'mongoose'
 import { mongoose } from '../libs/mongoose'
 
 

@@ -1,7 +1,7 @@
 import Router, { RouterContext } from 'koa-router'
 import LRU from 'lru'
 import { SexId } from '../types'
-import { ProdProducts } from '../schemas/prod-products'
+import { Products } from '../schemas/v2/products'
 import { createCache } from '../helpers/create-cache'
 import { customQueryParse, SortTypes } from '../libs/custom-query-parse'
 import { unisexCategoryKeys } from '../constants'
@@ -77,7 +77,7 @@ async function getProducts(params: Params) {
     query['sizes'] = { $in: sizeSearchArr }
   }
   
-  return ProdProducts.aggregate([
+  return Products.aggregate([
     { $match: query },
     { $facet: {
       items: [
