@@ -13,7 +13,8 @@ const options: mongoose.ConnectionOptions = {
   useFindAndModify: false,
   useUnifiedTopology: true,
   useCreateIndex: true,
-  autoIndex: false
+  
+  autoIndex: true
 }
 
 
