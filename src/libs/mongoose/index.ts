@@ -14,7 +14,7 @@ const options: mongoose.ConnectionOptions = {
   useUnifiedTopology: true,
   useCreateIndex: true,
   
-  autoIndex: true
+  autoIndex: false
 }
 
 
