@@ -97,6 +97,7 @@ async function getProducts(params: Params) {
           price: '$price',
           oldPrice: '$oldprice',
           sale: '$sale',
+          url: '$url'
         } }
       ],
       pagination: [
