@@ -6,16 +6,23 @@ import { Session , ONE_WEEK_MILLISECONDS } from '../../schemas/v2/session'
 const route = new Router()
 
 route.get('/', async (ctx: RouterContext) => {
+  const { sex_id } = ctx.query
   const cookie = ctx.cookies.get('session-sito')
-  if (cookie) {
-    const result = await Session.findOne({ _id: cookie }, { _id: 0, __v: 0, createdAt: 0, updatedAt: 0 })
+  
+  if (cookie && sex_id) {
+    const result = await Session.findOneAndUpdate({ _id: cookie }, { sex_id }, { new: true, upsert: true })
     if (result !== null) {
       ctx.body = result
       return
     }
   }
-  
-  const { sex_id } = ctx.query
+  if (cookie && !sex_id) {
+    const result = await Session.findOne({ _id: cookie })
+    if (result !== null) {
+      ctx.body = result
+      return
+    }
+  }
   
   const newSession = new Session({ sex_id: sex_id ?? null, like_products: [], expires: new Date() })
   return newSession.save()

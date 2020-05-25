@@ -8,10 +8,11 @@ route.get('/', async (ctx: RouterContext) => {
   const { id } = ctx.query
   if (!id) return ctx.throw('Нет id')
   
-  return Session.findOne({ _id: id })
+  
+  return await Session.findOne({ _id: id })
     .then(res => {
-      if (res === null) return null
-      return (ctx.body = { id: res._id, ...res })
+      if (res === null) return (ctx.body = null)
+      return (ctx.body = { id: res._id, sex_id: res.sex_id, like_products: res.like_products  })
     })
 })
 

@@ -1,14 +1,14 @@
-import { Seo } from '../../schemas/seos'
 import { RouterContext } from 'koa-router'
-import { Pathname } from '../../schemas/seos'
-import {findCategory, findPathname} from './lib'
+import LRU from 'lru'
+import { Seo , Pathname } from '../../schemas/seos'
 import { createCache } from '../../helpers/create-cache'
 import { recordToCacheKey } from '../../helpers/record-to-cache-key'
-import LRU from 'lru'
+import { findCategory, findPathname } from './lib'
+
 
 type SeoTags = {
   title: string,
-  description: string
+  description: string,
 }
 
 const defaultSeo = {
@@ -42,8 +42,8 @@ async function renderSeo({ sexId, path, search }: { sexId: 1 | 2 | null, path: s
   
     return await Seo.findOne({ pathname, sex, category, subcategory: Math.trunc(subcategory/1000) })
       .then(res => {
-        if (res === null) return  defaultSeo;
-        else  return  {title: res.title, description: res.description}
+        if (res === null) return  defaultSeo
+        else  return  { title: res.title, description: res.description }
       })
   } catch (e) {
     return defaultSeo
@@ -52,16 +52,16 @@ async function renderSeo({ sexId, path, search }: { sexId: 1 | 2 | null, path: s
 
 
 export async function getSeo(ctx: RouterContext) {
-    const body = ctx.request.body
+  const { body } = ctx.request
   
-    const sexId = body.sexId as 1 | 2 | null;
-    const path = body.path as string;
-    const search = body.search as string;
+  const sexId = body.sexId as 1 | 2 | null
+  const path = body.path as string
+  const search = body.search as string
     
-    const cacheKey = recordToCacheKey({ sexId, path, search })
-    ctx.body = await cacheRender(() => renderSeo({ sexId, path, search }), cacheKey)()
+  const cacheKey = recordToCacheKey({ sexId, path, search })
+  ctx.body = await cacheRender(() => renderSeo({ sexId, path, search }), cacheKey)()
   
-    if (ctx.status !== 200) {
-      seoLRU.remove(cacheKey)
-    }
+  if (ctx.status !== 200) {
+    seoLRU.remove(cacheKey)
+  }
 }
