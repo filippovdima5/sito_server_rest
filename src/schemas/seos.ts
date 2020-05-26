@@ -8,11 +8,11 @@ export type Pathname = '/' | 'products' | 'brands' | 'likes' | 'blog' | 'about'
 export interface ISeoDocument extends Document{
   pathname: Pathname,
   sex: 1 | 2 | 0,
-  category: number | 0,
+  category: string | 0,
   subcategory: number | 0,
   
   title: string,
-  description: string
+  description: string,
 }
 
 const seoScheme = new Schema({
@@ -24,7 +24,7 @@ const seoScheme = new Schema({
     enum: [1, 2, 0]
   },
   category: {
-    type: Number
+    type: String
   },
   subcategory: {
     type: Number

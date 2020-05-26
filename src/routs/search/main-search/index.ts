@@ -1,10 +1,10 @@
+import LRU from 'lru'
+import { RouterContext } from 'koa-router'
 import { recordToCacheKey } from '../../../helpers/record-to-cache-key'
 import { translRusToLatin } from '../../../libs'
 import { Products } from '../../../schemas/products'
 import { queryNormalization } from '../../../helpers/query-normalization'
-import LRU from 'lru'
-import {createCache} from '../../../helpers/create-cache'
-import { RouterContext } from 'koa-router'
+import { createCache } from '../../../helpers/create-cache'
 
 
 type ReqParams = {
@@ -21,24 +21,25 @@ const cacheRender = createCache(mainSearchLRU)
 
 async function renderMainSearch({ sex_id, phrase }: ReqParams ): Promise<any> {
   const sexQuery = (sex_id === 0) ? [0, 1, 2] : [0, sex_id]
+  
+  
   const phraseQuery: Array<any> = [phrase, translRusToLatin(phrase)]
     .map(item => (new RegExp(item, 'i')))
   
   
+  
   return await Products.aggregate([
-    {$match: {sex_id: {$in: sexQuery}}},
-    {$facet: {
-        // Пока бренды
-        brands: [
-          {$match: {brand: {$in: phraseQuery}}},
-          {$group: {_id: "$brand", count: {$sum: 1}}},
-          {$project: { title : "$_id", count : "$count", type: 'brand', _id: 0}},
-        ]
-      }},
+    { $match: { sex_id: { $in: sexQuery } } },
+    { $facet: {
+      // Пока бренды
+      brands: [
+        { $match: { brand: { $in: phraseQuery } } },
+        { $group: { _id: '$brand', count: { $sum: 1 } } },
+        { $project: { title : '$_id', count : '$count', type: 'brand', _id: 0 } },
+      ]
+    } },
   ])
-    .then(res => {
-      return [...res[0].brands]
-    })
+    .then(res => [...res[0].brands])
 }
 
 

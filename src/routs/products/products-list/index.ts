@@ -1,11 +1,11 @@
+import { RouterContext } from 'koa-router'
+import LRU from 'lru'
 import { queryNormalization } from '../../../helpers/query-normalization'
 import { Products, ProductsInterface } from '../../../schemas/products'
-import { RouterContext } from 'koa-router'
 import { projectFields } from '../../../helpers/project-fields'
-import { setSort } from './helpers/set-sort'
 import { recordToCacheKey } from '../../../helpers/record-to-cache-key'
-import LRU from "lru"
-import {createCache} from '../../../helpers/create-cache'
+import { createCache } from '../../../helpers/create-cache'
+import { setSort } from './helpers/set-sort'
 
 
 // ------------------------------------------------------------------
@@ -59,51 +59,51 @@ const responseField: Array<keyof ProductsInterface> = ['id', 'title', 'url', 'im
 
 type Request = {
   products: any,
-  info: any
+  info: any,
 }
 
 const productsListLRU = new LRU<Request>({ max: 10, maxAge: 60 * 1000 })
 const cacheRender = createCache(productsListLRU)
 
 async function renderProductsList(finalParams: ReqParams): Promise<Request> {
-  const {sex_id, brands, categories, colors, limit, page, sizes, sort, price_from, price_to, sale_from, sale_to} = finalParams
+  const { sex_id, brands, categories, colors, limit, page, sizes, sort, price_from, price_to, sale_from, sale_to } = finalParams
   
   
   const $skip = (page - 1) * limit
   const $sort = setSort(sort)
   
   const query: Query = {
-    sex_id: {$in: [0, sex_id]},
-    price: {$gte: price_from, $lte: price_to},
-    sale: {$gte: sale_from, $lte: sale_to},
+    sex_id: { $in: [0, sex_id] },
+    price: { $gte: price_from, $lte: price_to },
+    sale: { $gte: sale_from, $lte: sale_to },
   }
-  if (brands) query.brand = {$in: brands}
-  if (categories) query.category_id = {$in: categories}
-  if (colors) query.color = {$in: colors}
-  if (sizes) query.sizes = {$in: sizes}
+  if (brands) query.brand = { $in: brands }
+  if (categories) query.category_id = { $in: categories }
+  if (colors) query.color = { $in: colors }
+  if (sizes) query.sizes = { $in: sizes }
   
   const paginate_info = [
-    {$group: {_id: null, count: {$sum: 1}}},
+    { $group: { _id: null, count: { $sum: 1 } } },
     {
       $project: {
         _id: 0,
-        total: "$count",
-        total_pages: {$ceil: {$divide: ["$count", limit]}},
+        total: '$count',
+        total_pages: { $ceil: { $divide: ['$count', limit] } },
       }
     }
-  ];
+  ]
   
   
   return await Products
     .aggregate([
-      {$match: query},
+      { $match: query },
       {
         $facet: {
           products: [
-            {$sort},
-            {$skip},
-            {$limit: limit},
-            {$project: projectFields(responseField)}
+            { $sort },
+            { $skip },
+            { $limit: limit },
+            { $project: projectFields(responseField) }
           ],
           info: paginate_info
         }
@@ -116,7 +116,7 @@ async function renderProductsList(finalParams: ReqParams): Promise<Request> {
       }
       
       if (result.products.length === 0) {
-        return  {products: [], info: {total: 0, total_pages: 0}}
+        return  { products: [], info: { total: 0, total_pages: 0 } }
       }
       
       return result
@@ -133,7 +133,7 @@ export async function productsList(ctx: RouterContext) {
   ctx.body = await cacheRender(
     () => renderProductsList(finalParams),
     cacheKey,
-    () => ({products: [], info: {total: 0, total_pages: 0}})
+    () => ({ products: [], info: { total: 0, total_pages: 0 } })
   )()
 }
 

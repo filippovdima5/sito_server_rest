@@ -1,5 +1,8 @@
 import config from 'config'
-import Koa from "koa"
+import Koa from 'koa'
+import { routerApiV2 } from './api-v2'
+
+
 const app = new Koa()
 
 
@@ -14,6 +17,9 @@ if (process.env.NODE_ENV === 'production'){
   require('./middlewares/koa-logger').init(app)
   require('./middlewares/koa-bodyparser').init(app)
 }
+
+
+app.use(routerApiV2.routes())
 
 
 //Routes:
