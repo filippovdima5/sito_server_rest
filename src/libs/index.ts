@@ -1,3 +1,5 @@
+import fs from "fs"
+
 export const sendOk = () => JSON.stringify({
   code: 0,
   message: 'OK'
@@ -28,4 +30,13 @@ export function translRusToLatin (str: string ): string {
     )
   }
   return n_str.join('')
+}
+
+export async function appendFile(path: string, content: string): Promise<null> {
+  return new Promise((resolve, reject) => {
+    fs.appendFile(path, content, (err) => {
+      if (err) reject(err)
+      else resolve(null)
+    })
+  })
 }
